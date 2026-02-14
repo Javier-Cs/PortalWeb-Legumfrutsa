@@ -1,64 +1,81 @@
 ---
 import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
 <Layout title="Login - Legumfrut S.A.">
-	<section class="relative hidden md:flex items-center justify-center bg-gradient-to-br from-indigo-600 via-blue-600 to-indigo-900 text-white px-12">
-      <div class="max-w-md space-y-6">
-        <div class="text-5xl font-bold">*</div>
-        <h1 class="text-4xl font-bold">
-          Hello <br /> SaleSkip! 👋
-        </h1>
-        <p class="text-lg text-indigo-100">
-          Skip repetitive and manual sales-marketing tasks.  
-          Get highly productive through automation.
-        </p>
-      </div>
-    </section>
 
-	<section class="flex items-center justify-center px-6">
-      <div class="w-full max-w-md space-y-6">
-        <h2 class="text-3xl font-bold">Welcome Back!</h2>
-        <p class="text-sm text-gray-500">
-          Don’t have an account?
-          <a href="#" class="text-indigo-600 font-medium">Create one</a>
-        </p>
+	<div class="min-h-screen flex items-center justify-center bg-gray-200 px-4">
+		<div class="w-full max-w-5xl bg-white rounded-2xl shadow-2xl grid grid-cols-1 md:grid-cols-2 overflow-hidden">
 
-        <!-- FORM -->
-        <form class="space-y-4">
-          <input
-            type="email"
-            placeholder="Email"
-            class="w-full border-b border-gray-300 py-2 focus:outline-none focus:border-indigo-600"
-          />
+			<section class="px-10 py-12">
+				<div>
+					<img src="https://javier-cs.github.io/Images-Box-Web/images/logo_circu.png" alt="logo" class="h-35  w-35">
+					<span class="font-bold text-xl text-amber-500">LegumFrut S.A.</span>
+				</div>
+				<h1 class="text-3xl font-bold text-gray-900 mb-1">Inicia sesion</h1>
 
-          <input
-            type="password"
-            placeholder="Password"
-            class="w-full border-b border-gray-300 py-2 focus:outline-none focus:border-indigo-600"
-          />
+				<p class="text-sm text-gray-500 mb-8">
+					No tienes acceso a tu cuenta?
+					<a href="#" class="text-amber-500 font-bold">Solicita una revision.</a>
+				</p>
 
-          <button
-            class="w-full bg-black text-white py-3 rounded-md hover:bg-gray-800 transition">
-            Login Now
-          </button>
-        </form>
+				<form class="space-y-5">
 
-        <!-- GOOGLE -->
-        <button
-          class="w-full flex items-center justify-center gap-2 border py-3 rounded-md hover:bg-gray-50 transition">
-          <img src="/google.svg" alt="Google" class="w-5 h-5" />
-          Login with Google
-        </button>
+					<div>
+						<label class="text-sm text-gray-600 font-bold">Email</label>
+						<input 
+							type="email"
+							placeholder="Ingrese su Email..." 
+							class="mt-1 w-full rounded-md border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600"
+						>
+					</div>
 
-        <p class="text-sm text-center text-gray-400">
-          Forgot password?
-          <a href="#" class="text-black font-medium">Click here</a>
-        </p>
-      </div>
-    </section>
+					<div>
+						<label class="text-sm text-gray-600 font-bold">Password</label>
+						<input 
+						type="password"
+						class="w-full border mt-1 border-gray-200 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-600"
+						placeholder="Cual es tu contraseña?">						
+					</div>
+
+					<div class="flex items-center justify-between text-sm">
+						<label class="flex items-center gap-2 text-gray-600">
+						<input type="checkbox" class="accent-emerald-700" />
+						Remember me
+						</label>
+						<a href="#" class="text-emerald-700 font-medium">
+						Forgot Password?
+						</a>
+					</div>
+					<button class=" mt-3 w-full rounded-md bg-amber-600 py-3 text-white font-medium hover:bg-amber-700">iniciar seccion</button>
+				</form>
+
+			</section>
+
+			<section class="relative hidden md:flex flex-col justify-center bg-gradient-to-br from-emerald-600 via-amber-600 to-amber-600 px-12 text-white">
+				<div class="absolute top-6 right-8 text-sm opacity-100">
+					Nuestra pagina web
+				</div>
+
+				<div class="bg-white text-gray-900 rounded-xl p-6 w-80 shadow-xl mb-12">
+					<h3 class="font-semibold text-lg">
+						Eres un cliente normal?
+					</h3>
+					<p class="text-sm text-gray-500 mt-2">
+						Como llegaste aqui, visita nuestra web ahora.
+					</p>
+					<button class="mt-4 text-sm text-emerald-700 font-medium bg-amber-100 rounded-xl p-2 w-30 ">
+						Visitanos →
+					</button>
+				</div>
+
+				<div class="max-w-sm">
+					<h2 class="text-2xl font-bold mb-2">Conocenos un poco más</h2>
+					<p class="text-amber-100 text-sm">No te pierdas de los mejores productos a los mejores precios</p>
+				</div>
+			</section>
+		</div>
+	</div>
+
 </Layout>
