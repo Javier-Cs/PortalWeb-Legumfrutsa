@@ -1,11 +1,129 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
 
+model clientes {
+  id_cliente     Int       @id(map: "PK__clientes__677F38F5DCFC9457") @default(autoincrement())
+  id_empresa     Int
+  nombre         String    @db.VarChar(100)
+  telefono       String?   @db.VarChar(20)
+  email          String?   @db.VarChar(100)
+  tipo           String?   @db.VarChar(50)
+  estado         Boolean?  @default(true, map: "DF__clientes__estado__5629CD9C")
+  fecha_creacion DateTime? @default(dbgenerated("dateadd(hour,(-5),getutcdate())"), map: "DF__clientes__fecha___571DF1D5") @db.DateTime
+  aux1           String?   @db.VarChar(100)
+  aux2           String?   @db.VarChar(100)
+  aux3           String?   @db.VarChar(100)
+  empresas       empresas  @relation(fields: [id_empresa], references: [id_empresa], onUpdate: NoAction, map: "fk_cliente_empresa")
+  ventas         ventas[]
+}
+
+model detalle_venta {
+  id_detalleVenta Int       @id(map: "PK__detalle___3C2E445C00C97EDD") @default(autoincrement())
+  id_venta        Int
+  id_producto     Int
+  cantidad        Int
+  precio_unitario Decimal   @db.Decimal(10, 2)
+  subtotal        Decimal   @db.Decimal(10, 2)
+  descuento       Decimal   @db.Decimal(5, 2)
+  valor_total     Decimal   @db.Decimal(10, 2)
+  productos       productos @relation(fields: [id_producto], references: [id_producto], onUpdate: NoAction, map: "fk_detalle_venta_producto")
+  ventas          ventas    @relation(fields: [id_venta], references: [id_venta], onUpdate: NoAction, map: "fk_detalle_venta_venta")
+}
+
+model empresas {
+  id_empresa         Int          @id(map: "PK__empresas__4A0B7E2CFB7ED041") @default(autoincrement())
+  nombre_empresa     String       @db.VarChar(100)
+  razon_social       String       @db.VarChar(100)
+  ruc                String       @unique(map: "UQ__empresas__C2B74E61A51246E6") @db.Char(13)
+  tipo_contribuyente String?      @db.VarChar(30)
+  direccion          String?      @db.VarChar(200)
+  provincia          String?      @db.VarChar(50)
+  telefono           String?      @db.VarChar(20)
+  email_empresa      String?      @db.VarChar(100)
+  fecha_creacion     DateTime?    @default(dbgenerated("dateadd(hour,(-5),getutcdate())"), map: "DF__empresas__fecha___4AB81AF0") @db.DateTime
+  fecha_modificacion DateTime?    @default(dbgenerated("dateadd(hour,(-5),getutcdate())"), map: "DF__empresas__fecha___4BAC3F29") @db.DateTime
+  aux1               String?      @db.VarChar(100)
+  aux2               String?      @db.VarChar(100)
+  aux3               String?      @db.VarChar(100)
+  clientes           clientes[]
+  inventario         inventario[]
+  productos          productos[]
+  usuarios           usuarios[]
+  ventas             ventas[]
+}
+
+model inventario {
+  id                  Int       @id(map: "PK__inventar__3213E83F1DA93564") @default(autoincrement())
+  id_empresa          Int
+  id_producto         Int
+  stock               Int       @default(0, map: "DF__inventari__stock__6D0D32F4")
+  stock_minimo        Int?      @default(0, map: "DF__inventari__stock__6E01572D")
+  fecha_actualizacion DateTime? @default(dbgenerated("dateadd(hour,(-5),getutcdate())"), map: "DF__inventari__fecha__6EF57B66") @db.DateTime
+  empresas            empresas  @relation(fields: [id_empresa], references: [id_empresa], onUpdate: NoAction, map: "fk_inventario_empresa")
+  productos           productos @relation(fields: [id_producto], references: [id_producto], onUpdate: NoAction, map: "fk_inventario_producto")
+
+  @@unique([id_empresa, id_producto], map: "uq_empresa_producto")
+}
+
+model productos {
+  id_producto        Int             @id(map: "PK__producto__FF341C0D98A6FB2D") @default(autoincrement())
+  id_empresa         Int
+  nombre             String          @db.VarChar(40)
+  estado             Boolean?        @default(true, map: "DF__productos__estad__619B8048")
+  categoria          String          @db.VarChar(30)
+  fecha_creacion     DateTime?       @default(dbgenerated("dateadd(hour,(-5),getutcdate())"), map: "DF__productos__fecha__628FA481") @db.DateTime
+  fecha_modificacion DateTime?       @default(dbgenerated("dateadd(hour,(-5),getutcdate())"), map: "DF__productos__fecha__6383C8BA") @db.DateTime
+  precio_unitario    Decimal         @db.Decimal(10, 2)
+  precio_mayor       Decimal         @db.Decimal(10, 2)
+  tiene_iva          Boolean?        @default(true, map: "DF__productos__tiene__6477ECF3")
+  iva                Decimal         @db.Decimal(5, 2)
+  detalle_venta      detalle_venta[]
+  inventario         inventario[]
+  empresas           empresas        @relation(fields: [id_empresa], references: [id_empresa], onUpdate: NoAction, map: "fk_productos_empresa")
+}
+
+model usuarios {
+  id_user            Int       @id(map: "PK__usuarios__D2D146378B93C081") @default(autoincrement())
+  id_empresa         Int
+  nombre             String    @db.VarChar(50)
+  email              String    @unique(map: "UQ__usuarios__AB6E6164463C479B") @db.VarChar(70)
+  pass               String    @db.VarChar(255)
+  cedula             String?   @db.Char(10)
+  telefono           String?   @db.VarChar(20)
+  rol                String    @db.VarChar(20)
+  estado             Boolean?  @default(true, map: "DF__usuarios__estado__5070F446")
+  fecha_creacion     DateTime? @default(dbgenerated("dateadd(hour,(-5),getutcdate())"), map: "DF__usuarios__fecha___5165187F") @db.DateTime
+  fecha_modificacion DateTime? @default(dbgenerated("dateadd(hour,(-5),getutcdate())"), map: "DF__usuarios__fecha___52593CB8") @db.DateTime
+  aux1               String?   @db.VarChar(100)
+  aux2               String?   @db.VarChar(100)
+  aux3               String?   @db.VarChar(100)
+  empresas           empresas  @relation(fields: [id_empresa], references: [id_empresa], onUpdate: NoAction, map: "fk_empresa")
+  ventas             ventas[]
+}
+
+model ventas {
+  id_venta          Int             @id(map: "PK__ventas__459533BFB3970108") @default(autoincrement())
+  id_cliente        Int
+  id_empresa        Int
+  id_usuario        Int
+  descripcion_venta String?         @db.VarChar(300)
+  tipo_venta        String?         @db.VarChar(20)
+  estado_venta      String?         @default("SIN DEFINIR", map: "DF__ventas__estado_v__5AEE82B9") @db.VarChar(30)
+  efectivo_recibido Decimal         @db.Decimal(10, 2)
+  monto_total_Venta Decimal         @db.Decimal(10, 2)
+  monto_vuelto      Decimal         @db.Decimal(10, 2)
+  fecha_venta       DateTime?       @default(dbgenerated("dateadd(hour,(-5),getutcdate())"), map: "DF__ventas__fecha_ve__5BE2A6F2") @db.DateTime
+  aux1              String?         @db.VarChar(100)
+  aux2              String?         @db.VarChar(100)
+  aux3              String?         @db.VarChar(100)
+  detalle_venta     detalle_venta[]
+  clientes          clientes        @relation(fields: [id_cliente], references: [id_cliente], onUpdate: NoAction, map: "fk_ventas_clientes")
+  empresas          empresas        @relation(fields: [id_empresa], references: [id_empresa], onUpdate: NoAction, map: "fk_ventas_empresa")
+  usuarios          usuarios        @relation(fields: [id_usuario], references: [id_user], onUpdate: NoAction, map: "fk_ventas_usuario")
+}
