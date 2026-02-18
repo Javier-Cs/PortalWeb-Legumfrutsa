@@ -20,11 +20,13 @@ import Layout from '../layouts/Layout.astro';
 					<a href="#" class="text-amber-500 font-bold">Solicita una revision.</a>
 				</p>
 
-				<form class="space-y-5">
+				<form method="POST" action="/api/auth/callback/credentials" class="space-y-5">
 
 					<div>
 						<label class="text-sm text-gray-600 font-bold">Email</label>
 						<input 
+							name="email"
+							required
 							type="email"
 							placeholder="Ingrese su Email..." 
 							class="mt-1 w-full rounded-md border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-600"
@@ -34,9 +36,11 @@ import Layout from '../layouts/Layout.astro';
 					<div>
 						<label class="text-sm text-gray-600 font-bold">Password</label>
 						<input 
-						type="password"
-						class="w-full border mt-1 border-gray-200 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-600"
-						placeholder="Cual es tu contraseña?">						
+							name="password"
+							required
+							type="password"
+							class="w-full border mt-1 border-gray-200 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-600"
+							placeholder="Cual es tu contraseña?">						
 					</div>
 
 					<div class="flex items-center justify-between text-sm">
