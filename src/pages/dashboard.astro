@@ -1,0 +1,31 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const user = Astro.locals.user;
+
+if (!user) {
+  return Astro.redirect("/");
+}
+---
+<Layout title="Dashboard - Legumfrut S.A.">
+
+    <div class="min-h-screen flex items-center justify-center bg-gray-200 px-4">
+        <div class="w-full max-w-5xl bg-white rounded-2xl shadow-2xl grid grid-cols-1 md:grid-cols-2 overflow-hidden">
+
+            <section class="px-10 py-12">
+                <div>
+                    <img src="https://javier-cs.github.io/Images-Box-Web/images/logo_circu.png" alt="logo" class="h-35  w-35">
+                    <span class="font-bold text-xl text-amber-500">LegumFrut S.A.</span>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-1">Bienvenido al Dashboard {user.name}</h1>
+                <p>Rol: {user.rol}</p>
+
+                <p class="text-sm text-gray-500 mb-8">
+                    Aqui podras gestionar tus productos, pedidos y clientes.
+                </p>
+
+            </section>
+
+            <section class="relative hidden md:flex flex-col justify-center bg-gradient-to-br from-emerald-600 via-amber-600 to-amber-600 px-12 text-white">
+                <h2 class="text-3xl font-bold mb-4">Gestiona tu tienda de manera eficiente</h2>
+                <p class="mb-8">Utiliza las herramientas disponibles para optimizar tu negocio.</p>

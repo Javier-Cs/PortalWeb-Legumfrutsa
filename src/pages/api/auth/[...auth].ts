@@ -1,18 +1,20 @@
-import {Auth } from "@auth/core";
+import { Auth } from "@auth/core";
 import Credentials  from "@auth/core/providers/credentials";
 import bcrypt from "bcrypt";
-import prisma from "@/lib/prisma";
+import prisma from "../../../lib/prisma";
  
 
-export const { GET, POST} = Auth({
+export const { GET, POST } = Auth({
+    secret: process.env.AUTH_SECRET,
+    
     providers:[
         Credentials({
-            name: "credentials",
+            /*name: "credentials",
 
             credentials:{
                 email: {label: "Email", type: "email"},
                 password:{label: "Password", type: "password"},
-            },
+            },*/
 
             async authorize(credentials){
                 if(!credentials?.email || !credentials?.password){
@@ -50,13 +52,6 @@ export const { GET, POST} = Auth({
     },
 
     callbacks:{
-        async session({session, token}){
-            session.user.id = token.sub!;
-            session.user.rol = token.rol;
-            session.user.id_empresa = token.id_empresa;
-            return session;
-        },
-
         async jwt({token, user}){
             if(user){
                 token.rol = user.rol;
@@ -64,10 +59,16 @@ export const { GET, POST} = Auth({
             }
             return token;
         },
+        async session({session, token}){
+            session.user.id = token.sub!;
+            session.user.rol = token.rol;
+            session.user.id_empresa = token.id_empresa;
+            return session;
+        },
     },
 
 
-    page:{
+    pages:{
         //signIn: "/login",
         signIn: "/",
     },
