@@ -1,51 +1,73 @@
+// src/middleware.ts
 import { defineMiddleware } from "astro/middleware";
 import { jwtVerify } from "jose";
 
 const protectedRoutes = [
-    "/dashboard",
-    "/settings",
-    "/productos_crud",
-    "/users",
-  ];
+  "/dashboard",
+  "/settings",
+  "/productos_crud",
+  "/usuarios",
+  "/productos",
+];
 
-  const adminRoutes = [
-    "/productos_crud",
-    "/users",
-  ];
+const adminRoutes = [
+  "/productos_crud",
+  "/usuarios",
+  "/dashboard",
+  "/productos",
+];
 
+export const onRequest = defineMiddleware(async (ctx, next) => {
+  const { pathname } = ctx.url;
 
-  export const onRequest = defineMiddleware(async (ctx, next) => {
-    const path = ctx.url.pathname;
-    
+  // 1️⃣ Rutas públicas
+  if (
+    pathname === "/" ||
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/_astro") ||
+    pathname.startsWith("/favicon")
+  ) {
+    return next();
+  }
 
-    if (!protectedRoutes.some(r => path.startsWith(r))) {
-      return next();
-    }
+  // 2️⃣ Rutas no protegidas
+  if (!protectedRoutes.some(r => pathname.startsWith(r))) {
+    return next();
+  }
 
+  // 3️⃣ Leer token (Auth.js cookies)
   const token =
     ctx.cookies.get("authjs.session-token")?.value ??
     ctx.cookies.get("__Secure-authjs.session-token")?.value;
 
+  if (!token) {
+    return ctx.redirect("/");
+  }
 
-    if(!token){
-      return ctx.redirect("/");
-    }
-    
-    try {
-      const {payload} = await jwtVerify(
-          token,
-          new TextEncoder().encode(process.env.AUTH_SECRET)
-      );
+  try {
+    const { payload } = await jwtVerify(
+      token,
+      new TextEncoder().encode(process.env.AUTH_SECRET!)
+    );
 
-      if(adminRoutes.some(r => path.startsWith(r)) && payload.rol !== "ADMIN"){
-          return new Response("No tienes permiso para acceder a esta página", { status: 403 });
-      }
+    const { rol, id_empresa, email, name, sub } = payload as any;
 
-      ctx.locals.user = payload;
-      return next();
-      
-    } catch (error) {
-      return ctx.redirect("/");
+    // 4️⃣ Solo admin
+    if (adminRoutes.some(r => pathname.startsWith(r)) && rol !== "ADMIN") {
+      return new Response("Forbidden - acceso denegado", { status: 403 });
     }
 
-  });
+    // 5️⃣ Contexto disponible
+    ctx.locals.user = {
+      sub,
+      email,
+      name,
+      rol,
+      id_empresa,
+    };
+
+    return next();
+  } catch {
+    return ctx.redirect("/");
+  }
+});

@@ -7,6 +7,7 @@ declare module "@auth/core/types" {
             id: string;
             email: string;
             name: string;
+            rol: string;
             id_empresa: number;
         }
     }
