@@ -1,6 +1,6 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+export const prerender = false;
+import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Login - Legumfrut S.A.">
@@ -20,10 +20,11 @@ import Layout from '../layouts/Layout.astro';
 					<a href="#" class="text-amber-500 font-bold">Solicita una revision.</a>
 				</p>
 
-				<form method="POST" action="/api/auth/callback/credentials" class="space-y-5">
+				<form 
+				id="login-form"
+				class="space-y-5">
 
 					<div>
-						<input type="hidden" name="callbackUrl" value="/dashboard" />
 						<label class="text-sm text-gray-600 font-bold">Email</label>
 						<input 
 							name="email"
@@ -84,3 +85,26 @@ import Layout from '../layouts/Layout.astro';
 	</div>
 
 </Layout>
+
+<script>
+  const form = document.getElementById("login-form");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const res = await fetch("/api/login", {
+      method: "POST",
+      body: new FormData(form),
+      credentials: "same-origin",
+    });
+
+    if (res.redirected) {
+      window.location.href = res.url;
+      return;
+    }
+
+    if (!res.ok) {
+      alert("Credenciales incorrectas");
+    }
+  });
+</script>

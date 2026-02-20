@@ -5,16 +5,13 @@ import { jwtVerify } from "jose";
 const protectedRoutes = [
   "/dashboard",
   "/settings",
-  "/productos_crud",
-  "/usuarios",
   "/productos",
+  "/usuarios"
 ];
 
 const adminRoutes = [
   "/productos_crud",
   "/usuarios",
-  "/dashboard",
-  "/productos",
 ];
 
 export const onRequest = defineMiddleware(async (ctx, next) => {
@@ -23,7 +20,7 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
   // 1️⃣ Rutas públicas
   if (
     pathname === "/" ||
-    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/login") ||
     pathname.startsWith("/_astro") ||
     pathname.startsWith("/favicon")
   ) {
@@ -31,14 +28,12 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
   }
 
   // 2️⃣ Rutas no protegidas
-  if (!protectedRoutes.some(r => pathname.startsWith(r))) {
+  if (!protectedRoutes.some((r) => pathname.startsWith(r))) {
     return next();
   }
 
-  // 3️⃣ Leer token (Auth.js cookies)
-  const token =
-    ctx.cookies.get("authjs.session-token")?.value ??
-    ctx.cookies.get("__Secure-authjs.session-token")?.value;
+  // 3️⃣ Leer JWT manual
+  const token = ctx.cookies.get("session-token")?.value;
 
   if (!token) {
     return ctx.redirect("/");
@@ -50,18 +45,17 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
       new TextEncoder().encode(process.env.AUTH_SECRET!)
     );
 
-    const { rol, id_empresa, email, name, sub } = payload as any;
+    const { rol, id_empresa, email, sub } = payload as any;
 
     // 4️⃣ Solo admin
-    if (adminRoutes.some(r => pathname.startsWith(r)) && rol !== "ADMIN") {
+    if (adminRoutes.some((r) => pathname.startsWith(r)) && rol !== "ADMIN") {
       return new Response("Forbidden - acceso denegado", { status: 403 });
     }
 
-    // 5️⃣ Contexto disponible
+    // 5️⃣ Usuario disponible en Astro.locals
     ctx.locals.user = {
       sub,
       email,
-      name,
       rol,
       id_empresa,
     };
